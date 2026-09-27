@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Canvas Assignments Dashboard</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f5f7; margin: 0; padding: 30px; }
+    h1 { color: #2d3b45; }
+    #search { padding: 8px; width: 300px; margin-bottom: 16px; border: 1px solid #ccc; border-radius: 4px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+    th { background: #2d3b45; color: #fff; cursor: pointer; }
+    tr:hover { background: #f9f9f9; }
+    .status-missing { color: #c0392b; font-weight: bold; }
+    .status-submitted { color: #27ae60; font-weight: bold; }
+    .status-default { color: #555; }
+    #count { margin-bottom: 10px; color: #666; }
+  </style>
+</head>
+<body>
+  <h1>Canvas Assignments Dashboard</h1>
+  <input type="text" id="search" placeholder="Filter by title or status...">
+  <div id="count"></div>
+  <table>
+    <thead>
+      <tr><th data-key="title">Title</th><th data-key="dueDate">Due Date</th><th data-key="status">Status</th></tr>
+    </thead>
+    <tbody id="assignment-body"></tbody>
+  </table>
+
+  <script>
+    const assignments = [
+  {
+    "title": "Tech Forum One - Reflection Paper",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Quiz One - Test your HTML/CSS/JS Prowess",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "CSS, advanced (Front-End Web Development) [synced from intranet]",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "CSS, basic (Front-End Web Development) [synced from intranet]",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "HTML, advanced (Front-End Web Development) [synced from intranet]",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "HTML, basic (Front-End Web Development) [synced from intranet]",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "JavaScript - Objects, Scopes and Closures (Front-End Web Development) [synced from intranet]",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "JavaScript - Warm up (Front-End Web Development) [synced from intranet]",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "JavaScript - Web jQuery (Front-End Web Development) [synced from intranet]",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "JavaScript - Web scraping (Front-End Web Development) [synced from intranet]",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Regular expression (Front-End Web Development) [synced from intranet]",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Responsive design (Front-End Web Development) [synced from intranet]",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Read and Watch : Week One Mandatory Resources",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Read and Watch : Week Two Mandatory Resources",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Read and Watch : Week Three Mandatory Resources",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Read and Watch : Week Four Mandatory Resources",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Read and Watch : Week Four Additional Resources",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Read and Watch : Week Five Mandatory Resources",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Read and Watch : Week Five Additional Resources",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Read and Watch : Week Six Mandatory Resources",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Read and Watch : Week Six Additional Resources",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Regex Onboarding Hackathon",
+    "dueDate": "Due  Sep 11 at 11:59pm Sep 11 at 11:59pm",
+    "status": "Not Submitted / Available"
+  },
+  {
+    "title": "Roll Call Attendance",
+    "dueDate": "No due date",
+    "status": "Not Submitted / Available"
+  }
+];
+
+    function statusClass(status) {
+      const s = status.toLowerCase();
+      if (s.includes('missing')) return 'status-missing';
+      if (s.includes('submitted')) return 'status-submitted';
+      return 'status-default';
+    }
+
+    function render(data) {
+      const $body = $('#assignment-body');
+      $body.empty();
+      data.forEach(function(item) {
+        $body.append(
+          $('<tr>').append(
+            $('<td>').text(item.title),
+            $('<td>').text(item.dueDate),
+            $('<td>').addClass(statusClass(item.status)).text(item.status)
+          )
+        );
+      });
+      $('#count').text(data.length + ' assignment(s)');
+    }
+
+    $(function () {
+      render(assignments);
+
+      $('#search').on('input', function () {
+        const query = $(this).val().toLowerCase();
+        const filtered = assignments.filter(function(item) {
+          return item.title.toLowerCase().includes(query) ||
+                 item.status.toLowerCase().includes(query);
+        });
+        render(filtered);
+      });
+
+      $('th').on('click', function () {
+        const key = $(this).data('key');
+        const sorted = [...assignments].sort(function(a, b) {
+          return a[key].localeCompare(b[key]);
+        });
+        render(sorted);
+      });
+    });
+  </script>
+</body>
+</html>
